@@ -1,4 +1,7 @@
 # import 必要的函式庫
+import json
+
+import requests
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
@@ -33,3 +36,32 @@ def callback(request):
         return HttpResponse()
     else:
         return HttpResponseBadRequest()
+
+
+def get_answer(message_text):
+    url = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/32ee081d-fde6-4abf-aa2b-ba62497cbc12/generateAnswer"
+
+    # 發送request到QnAMaker Endpoint要答案
+    response = requests.post(
+        url,
+        json.dumps({'question': message_text}),
+        headers={
+            'Content-Type': 'application/json',
+            'Ocp-Apim-Subscription-Key': '0bfb988d-88b1-4f8e-948d-4e4738b6048d'
+        }
+    )
+
+    data = response.json()
+
+    try:
+        # 我們使用免費service可能會超過限制（一秒可以發的request數）
+        if "error" in data:
+            return data["error"]["message"]
+        # 這裡我們預設取第一個答案
+        answer = data['answers'][0]['answer']
+
+        return answer
+
+    except Exception:
+
+        return "Error occurs when finding answer"
