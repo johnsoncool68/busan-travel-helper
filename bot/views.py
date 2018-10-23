@@ -29,9 +29,11 @@ def callback(request):
 
         for event in events:
             if isinstance(event, MessageEvent):
+                answer = get_answer(event.message.text)
                 line_bot_api.reply_message(
                     event.reply_token,
-                   TextSendMessage(text=event.message.text)
+                    #TextSendMessage(text=event.message.text)
+                    TextSendMessage(text=answer)
                 )
         return HttpResponse()
     else:
@@ -64,4 +66,4 @@ def get_answer(message_text):
 
     except Exception:
 
-        return "Error occurs when finding answer"
+        return "唉呀出錯惹！"
