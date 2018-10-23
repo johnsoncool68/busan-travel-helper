@@ -1,0 +1,1 @@
+web: gunicorn busan_travel_helper_bot.wsgi
